@@ -12,6 +12,8 @@ import 'package:provider/provider.dart';
 import 'package:app_links/app_links.dart';
 import 'dart:io';
 import 'package:window_manager/window_manager.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -47,6 +49,38 @@ void main() async {
     ),
   );
 }
+class HomeScreen extends StatelessWidget {
+  final FocusNode _focusNode = FocusNode();
+@override
+  Widget build(BuildContext context) {
+    return RawKeyboardListener(
+      focusNode: _focusNode,
+      autofocus: true,
+      onKey: (RawKeyEvent event) {
+        if (event is RawKeyDownEvent) {
+          if (event.logicalKey == LogicalKeyboardKey.select) {
+            print("Select button pressed");
+            // Trigger action here
+          } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+            print("Right arrow pressed");
+            // Move focus or scroll
+          }
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: Text(
+            'Welcome to Mirarr TV!',
+            style: TextStyle(color: Colors.white, fontSize: 24),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
 
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
