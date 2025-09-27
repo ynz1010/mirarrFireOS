@@ -1,6 +1,6 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:Mirarr/widgets/bottom_bar.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -52,15 +52,9 @@ class _RssScreenState extends State<RssScreen> with TickerProviderStateMixin {
     if (categories != null) {
       for (var category in categories) {
         if (category.value.contains("Movies")) {
-          return Icon(
-            Icons.movie,
-            color: Theme.of(context).secondaryHeaderColor,
-          );
+          return Icon(Icons.movie, color: Theme.of(context).secondaryHeaderColor);
         } else if (category.value.contains("TV")) {
-          return Icon(
-            Icons.tv,
-            color: Theme.of(context).secondaryHeaderColor,
-          );
+          return Icon(Icons.tv, color: Theme.of(context).secondaryHeaderColor);
         }
       }
     }
@@ -77,19 +71,31 @@ class _RssScreenState extends State<RssScreen> with TickerProviderStateMixin {
       itemCount: filteredItems.length,
       itemBuilder: (context, index) {
         final item = filteredItems[index];
-        return ListTile(
-          leading: _getCategoryIcon(item.categories),
-          title: Text(
-            item.title ?? '',
-            style: const TextStyle(color: Colors.white),
-          ),
-          subtitle: Text(
-            item.pubDate.toString(),
-            style: const TextStyle(color: Colors.white),
-          ),
-          onTap: () {
-            _launchUrl(Uri.parse(item.link!));
+        return FocusableActionDetector(
+          onFocusChange: (focused) {
+            setState(() {});
           },
+          onKey: (node, event) {
+            if (event.logicalKey == LogicalKeyboardKey.select) {
+              _launchUrl(Uri.parse(item.link!));
+              return KeyEventResult.handled;
+            }
+            return KeyEventResult.ignored;
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Focus.of(context).hasFocus ? Colors.yellow : Colors.transparent,
+                width: 2,
+              ),
+            ),
+            child: ListTile(
+              leading: _getCategoryIcon(item.categories),
+              title: Text(item.title ?? '', style: const TextStyle(color: Colors.white)),
+              subtitle: Text(item.pubDate.toString(), style: const TextStyle(color: Colors.white)),
+              onTap: () => _launchUrl(Uri.parse(item.link!)),
+            ),
+          ),
         );
       },
     );
@@ -100,18 +106,13 @@ class _RssScreenState extends State<RssScreen> with TickerProviderStateMixin {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
-        title: const Text(
-          'RSS Feed',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+        title: const Text('RSS Feed', style: TextStyle(fontWeight: FontWeight.bold)),
         bottom: TabBar(
           labelColor: Colors.black,
           indicatorSize: TabBarIndicatorSize.tab,
           controller: _tabController,
           tabs: const [
-            Tab(
-              text: 'Movies',
-            ),
+            Tab(text: 'Movies'),
             Tab(text: 'TV'),
           ],
         ),
@@ -152,3 +153,4 @@ class _RssScreenState extends State<RssScreen> with TickerProviderStateMixin {
     );
   }
 }
+
